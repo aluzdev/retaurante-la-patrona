@@ -277,7 +277,7 @@ function updateSend() {
 // WhatsApp: *texto* = negrita. Un renglón por dato para que se lea bien.
 function buildMessage(): string {
   const L: string[] = [];
-  L.push('¡Buen día, La Patrona! 🌸');
+  L.push('¡Buen día, La Patrona!');
   L.push('Quiero hacer este pedido:');
   L.push('');
 
@@ -301,7 +301,7 @@ function buildMessage(): string {
   L.push(`*Pago:* ${meta.payment}`);
   if (meta.name.trim()) L.push(`*A nombre de:* ${meta.name.trim()}`);
   L.push('');
-  L.push('¡Gracias! 🙏');
+  L.push('¡Gracias!');
   return L.join('\n');
 }
 
