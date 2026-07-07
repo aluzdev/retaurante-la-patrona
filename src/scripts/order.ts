@@ -266,10 +266,17 @@ function syncFields() {
   el.paymentHint.hidden = meta.payment !== 'Transferencia';
 }
 
+// Móvil: wa.me abre la app directo. Desktop: web.whatsapp.com evita la
+// pantalla intermedia de WhatsApp y entra directo al chat.
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+
 function updateSend() {
   const needsAddress = meta.orderType === 'A domicilio';
   const valid = lines.length > 0 && (!needsAddress || meta.address.trim().length > 0);
-  el.send.href = `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(buildMessage())}`;
+  const text = encodeURIComponent(buildMessage());
+  el.send.href = isMobile
+    ? `https://wa.me/${WA_NUMBER}?text=${text}`
+    : `https://web.whatsapp.com/send?phone=${WA_NUMBER}&text=${text}`;
   el.send.setAttribute('aria-disabled', valid ? 'false' : 'true');
 }
 
@@ -284,10 +291,9 @@ function buildMessage(): string {
   for (const line of lines) {
     const qty = line.qty > 1 ? ` ×${line.qty}` : '';
     L.push(`*${line.name}*${qty}`);
+    // solo los platillos, sin etiquetas — el dueño ya sabe qué es una corrida
     for (const o of line.opts) {
-      if (!o.value) continue;
-      if (o.label === 'Bebida') L.push(`  • ${o.value} (incluida)`);
-      else L.push(`  • ${o.label}: ${o.value}`);
+      if (o.value) L.push(`  • ${o.value}`);
     }
     if (line.note) L.push(`  • Nota: ${line.note}`);
     L.push('');
