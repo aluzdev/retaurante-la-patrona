@@ -274,24 +274,32 @@ function updateSend() {
 }
 
 /* ---------- mensaje ---------- */
+// WhatsApp: *texto* = negrita. Un renglón por dato para que se lea bien.
 function buildMessage(): string {
   const L: string[] = [];
   L.push('¡Buen día, La Patrona! 🌸');
-  L.push('Me gustaría hacer este pedido:');
+  L.push('Quiero hacer este pedido:');
   L.push('');
+
   for (const line of lines) {
-    L.push(`• ${line.qty}× ${line.name}`);
-    const optStr = line.opts.filter((o) => o.value).map((o) => o.value).join(' · ');
-    if (optStr) L.push(`   – ${optStr}`);
-    if (line.note) L.push(`   – Nota: ${line.note}`);
+    const qty = line.qty > 1 ? ` ×${line.qty}` : '';
+    L.push(`*${line.name}*${qty}`);
+    for (const o of line.opts) {
+      if (!o.value) continue;
+      if (o.label === 'Bebida') L.push(`  • ${o.value} (incluida)`);
+      else L.push(`  • ${o.label}: ${o.value}`);
+    }
+    if (line.note) L.push(`  • Nota: ${line.note}`);
+    L.push('');
   }
-  L.push('');
-  L.push(`Entrega: ${meta.orderType}`);
+
+  L.push('━━━━━━━━━━');
+  L.push(`*Entrega:* ${meta.orderType}`);
   if (meta.orderType === 'A domicilio' && meta.address.trim()) {
-    L.push(`Dirección: ${meta.address.trim()}`);
+    L.push(`*Dirección:* ${meta.address.trim()}`);
   }
-  L.push(`Pago: ${meta.payment}`);
-  if (meta.name.trim()) L.push(`A nombre de: ${meta.name.trim()}`);
+  L.push(`*Pago:* ${meta.payment}`);
+  if (meta.name.trim()) L.push(`*A nombre de:* ${meta.name.trim()}`);
   L.push('');
   L.push('¡Gracias! 🙏');
   return L.join('\n');
