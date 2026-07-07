@@ -108,6 +108,86 @@ function addComidaCorrida() {
   announce('Comida corrida agregada a tu pedido');
 }
 
+/* ---------- dropdown propio del guisado (listbox accesible) ---------- */
+function initGuisoDropdown() {
+  const dd = $('[data-dd]');
+  if (!dd) return;
+  const btn = $('[data-dd-btn]', dd)!;
+  const pop = $('[data-dd-pop]', dd) as HTMLElement & {
+    showPopover?: () => void;
+    hidePopover?: () => void;
+  };
+  const hidden = $<HTMLInputElement>('[data-corrida-guiso]', dd)!;
+  const label = $('[data-dd-label]', dd)!;
+  const options = $$('[role="option"]', pop);
+  const supported = typeof pop.showPopover === 'function';
+  // fallback sin Popover API: se oculta con [hidden] hasta abrir
+  if (!supported) pop.setAttribute('hidden', '');
+
+  const place = () => {
+    const r = btn.getBoundingClientRect();
+    pop.style.left = `${r.left}px`;
+    pop.style.top = `${r.bottom + 6}px`;
+    pop.style.minWidth = `${r.width}px`;
+  };
+  const isOpen = () => btn.getAttribute('aria-expanded') === 'true';
+  const open = () => {
+    place();
+    if (supported) pop.showPopover!();
+    else pop.removeAttribute('hidden');
+    btn.setAttribute('aria-expanded', 'true');
+    const sel = options.find((o) => o.getAttribute('aria-selected') === 'true') ?? options[0];
+    (sel as HTMLElement | undefined)?.focus();
+  };
+  const close = () => {
+    if (supported) pop.hidePopover!();
+    else pop.setAttribute('hidden', '');
+    btn.setAttribute('aria-expanded', 'false');
+  };
+
+  btn.addEventListener('click', () => (isOpen() ? close() : open()));
+  // sincroniza estado cuando el popover se cierra solo (clic fuera / Esc)
+  pop.addEventListener('toggle', (e: Event) => {
+    const st = (e as ToggleEvent).newState;
+    btn.setAttribute('aria-expanded', st === 'open' ? 'true' : 'false');
+  });
+
+  const select = (o: Element) => {
+    options.forEach((x) => x.setAttribute('aria-selected', 'false'));
+    o.setAttribute('aria-selected', 'true');
+    const v = (o as HTMLElement).dataset.value!;
+    hidden.value = v;
+    label.textContent = v;
+    close();
+    btn.focus();
+  };
+
+  options.forEach((o, i) => {
+    o.addEventListener('click', () => select(o));
+    o.addEventListener('keydown', (e) => {
+      const k = (e as KeyboardEvent).key;
+      const focus = (idx: number) => {
+        e.preventDefault();
+        (options[(idx + options.length) % options.length] as HTMLElement).focus();
+      };
+      if (k === 'ArrowDown') focus(i + 1);
+      else if (k === 'ArrowUp') focus(i - 1);
+      else if (k === 'Home') focus(0);
+      else if (k === 'End') focus(options.length - 1);
+      else if (k === 'Enter' || k === ' ') {
+        e.preventDefault();
+        select(o);
+      }
+    });
+  });
+
+  const reposition = () => {
+    if (isOpen()) place();
+  };
+  window.addEventListener('resize', reposition);
+  window.addEventListener('scroll', reposition, true);
+}
+
 /* ---------- switch corrida / a la carta ---------- */
 function initSwitch() {
   const btns = $$('[data-switch] .switch__btn');
@@ -375,6 +455,7 @@ function init() {
 
   // comida corrida + switch de vistas
   initSwitch();
+  initGuisoDropdown();
   $('[data-corrida-add]')?.addEventListener('click', addComidaCorrida);
 
   // agregar al tocar el platillo (a la carta)
