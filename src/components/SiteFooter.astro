@@ -21,7 +21,10 @@ const year = new Date().getFullYear();
 
   <div class="container footer__bottom">
     <p>© {year} La Patrona Fondita · Hecho con cariño en Azcapotzalco.</p>
-    <p>{site.address.full}</p>
+    <a class="footer__credit" href="https://aluzdev.com" target="_blank" rel="noopener">
+      Sitio web diseñado y hecho por <strong>Aluzdev</strong>
+      <span class="footer__credit-arrow" aria-hidden="true">↗</span>
+    </a>
   </div>
 </footer>
 
@@ -85,10 +88,36 @@ const year = new Date().getFullYear();
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    align-items: center;
     gap: 0.5rem;
     padding-top: var(--space-m);
     font-size: 0.8rem;
     color: var(--cream-mute);
+  }
+  .footer__credit {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--cream-mute);
+    transition: color var(--dur-fast);
+  }
+  .footer__credit strong {
+    color: var(--cempasuchil);
+    font-weight: 700;
+  }
+  .footer__credit:hover {
+    color: var(--cream);
+  }
+  .footer__credit-arrow {
+    transition: transform var(--dur-fast) var(--ease-out-quart);
+  }
+  .footer__credit:hover .footer__credit-arrow {
+    transform: translate(2px, -2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .footer__credit-arrow {
+      transition: none;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .footer__cta:hover {
