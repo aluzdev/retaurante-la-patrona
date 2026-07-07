@@ -1,0 +1,87 @@
+---
+// Un solo juego de iconos, trazo consistente (1.75), coherente en todo el sitio.
+interface Props {
+  name:
+    | 'whatsapp'
+    | 'plus'
+    | 'minus'
+    | 'close'
+    | 'clock'
+    | 'pin'
+    | 'arrow-down'
+    | 'arrow-right'
+    | 'bag'
+    | 'note'
+    | 'check'
+    | 'phone';
+  size?: number;
+  class?: string;
+}
+const { name, size = 24, class: cls } = Astro.props;
+const stroke = {
+  fill: 'none',
+  stroke: 'currentColor',
+  'stroke-width': '1.75',
+  'stroke-linecap': 'round',
+  'stroke-linejoin': 'round',
+} as const;
+---
+
+<svg
+  width={size}
+  height={size}
+  viewBox="0 0 24 24"
+  aria-hidden="true"
+  focusable="false"
+  class={cls}
+>
+  {name === 'whatsapp' && (
+    <path
+      fill="currentColor"
+      d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.02A9.82 9.82 0 0 0 12.04 2Zm0 1.82c2.16 0 4.19.84 5.72 2.37a8.05 8.05 0 0 1 2.37 5.72c0 4.46-3.63 8.09-8.1 8.09a8.2 8.2 0 0 1-4.16-1.14l-.3-.18-3.11.82.83-3.04-.19-.31a8.06 8.06 0 0 1-1.23-4.28c0-4.46 3.63-8.09 8.1-8.09Zm-2.35 4.3c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.02 2.6.13.18 1.76 2.85 4.34 3.87 2.16.85 2.6.68 3.07.64.47-.04 1.52-.62 1.73-1.22.21-.6.21-1.11.15-1.22-.06-.1-.23-.17-.48-.29-.25-.13-1.52-.75-1.75-.83-.23-.09-.4-.13-.57.12-.17.25-.66.82-.8.99-.15.17-.29.19-.54.06-.25-.12-1.06-.39-2.02-1.25-.75-.66-1.25-1.48-1.4-1.73-.15-.25-.02-.38.11-.51.11-.11.25-.29.38-.44.12-.15.16-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.55-1.37-.77-1.87-.2-.48-.4-.42-.55-.43-.14 0-.3-.01-.47-.01Z"
+    />
+  )}
+  {name === 'plus' && (
+    <g set:html={`<path d="M12 5v14M5 12h14"/>`} {...stroke} />
+  )}
+  {name === 'minus' && <g set:html={`<path d="M5 12h14"/>`} {...stroke} />}
+  {name === 'close' && (
+    <g set:html={`<path d="M6 6l12 12M18 6L6 18"/>`} {...stroke} />
+  )}
+  {name === 'check' && (
+    <g set:html={`<path d="M4.5 12.5l5 5 10-11"/>`} {...stroke} />
+  )}
+  {name === 'clock' && (
+    <g set:html={`<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/>`} {...stroke} />
+  )}
+  {name === 'pin' && (
+    <g
+      set:html={`<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>`}
+      {...stroke}
+    />
+  )}
+  {name === 'phone' && (
+    <g
+      set:html={`<path d="M5 4h3l1.6 4.5-2 1.4a12 12 0 0 0 5.5 5.5l1.4-2L19 19v3a1 1 0 0 1-1 1A15 15 0 0 1 3 8a1 1 0 0 1 1-1Z"/>`}
+      {...stroke}
+    />
+  )}
+  {name === 'arrow-down' && (
+    <g set:html={`<path d="M12 5v14M6 13l6 6 6-6"/>`} {...stroke} />
+  )}
+  {name === 'arrow-right' && (
+    <g set:html={`<path d="M5 12h14M13 6l6 6-6 6"/>`} {...stroke} />
+  )}
+  {name === 'bag' && (
+    <g
+      set:html={`<path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/>`}
+      {...stroke}
+    />
+  )}
+  {name === 'note' && (
+    <g
+      set:html={`<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h4"/>`}
+      {...stroke}
+    />
+  )}
+</svg>

@@ -1,0 +1,240 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<section class="hero" id="top">
+  <div class="hero__media" aria-hidden="true">
+    <img
+      src="/images/hero-comida.jpg"
+      alt=""
+      width="1600"
+      height="1200"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <p class="hero__badge">
+        <span aria-hidden="true">✦</span> Celebrando {site.years} años en el barrio
+      </p>
+
+      <h1 class="hero__title">
+        Comida de casa,<br />
+        a un mensaje<br />
+        de <em>distancia.</em>
+      </h1>
+
+      <p class="hero__lede">
+        La fondita de <strong>{site.address.colonia}</strong>. Mira el menú, arma tu
+        pedido y te lo mandamos por WhatsApp — listo para enviar, sin tener que
+        memorizar nada.
+      </p>
+
+      <div class="hero__actions">
+        <a class="btn btn--on-dark" href="#menu">
+          <Icon name="bag" size={20} /> Ver menú y pedir
+        </a>
+        <a
+          class="btn btn--ghost btn--ghost-dark"
+          href={`https://wa.me/${site.whatsappNumber}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <Icon name="whatsapp" size={20} /> Escríbenos directo
+        </a>
+      </div>
+
+      <dl class="hero__facts">
+        <div class="hero__fact">
+          <dt><Icon name="whatsapp" size={18} /> WhatsApp</dt>
+          <dd>{site.whatsappDisplay}</dd>
+        </div>
+        <div class="hero__fact">
+          <dt><Icon name="clock" size={18} /> Horario</dt>
+          <dd>Desayuno y comida · 8:30–17:00</dd>
+        </div>
+        <div class="hero__fact">
+          <dt><Icon name="pin" size={18} /> Dónde</dt>
+          <dd>{site.address.colonia}, Azcapotzalco</dd>
+        </div>
+      </dl>
+    </div>
+  </div>
+
+  <a class="hero__scroll" href="#menu" aria-label="Bajar al menú">
+    <Icon name="arrow-down" size={22} />
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    isolation: isolate;
+    min-height: min(92svh, 780px);
+    display: flex;
+    align-items: flex-end;
+    padding-block: clamp(3rem, 6vw, 6rem);
+    background: var(--barro-deep);
+    color: var(--cream);
+    overflow: hidden;
+  }
+
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+  .hero__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% center;
+    filter: saturate(1.05) contrast(1.02);
+  }
+  /* Warm, directional scrim so the barro brand color soaks the image
+     and the type stays legible — no flat black overlay. */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        104deg,
+        oklch(0.27 0.082 36 / 0.96) 0%,
+        oklch(0.3 0.09 34 / 0.82) 38%,
+        oklch(0.32 0.09 32 / 0.35) 68%,
+        oklch(0.34 0.08 30 / 0.12) 100%
+      ),
+      linear-gradient(
+        0deg,
+        oklch(0.24 0.07 34 / 0.7) 0%,
+        transparent 42%
+      );
+  }
+
+  .hero__inner {
+    width: 100%;
+  }
+  .hero__content {
+    max-width: 40rem;
+  }
+
+  .hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.9rem;
+    margin-bottom: var(--space-m);
+    border-radius: var(--r-pill);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--cempasuchil);
+    background: oklch(0.34 0.1 38 / 0.55);
+    border: 1px solid oklch(0.8 0.15 78 / 0.35);
+    backdrop-filter: blur(4px);
+  }
+
+  .hero__title {
+    font-size: var(--step-5);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+    margin-bottom: var(--space-m);
+  }
+  .hero__title em {
+    font-style: normal;
+    color: var(--cempasuchil);
+  }
+
+  .hero__lede {
+    font-size: var(--step-1);
+    line-height: 1.5;
+    max-width: 34rem;
+    color: var(--cream-soft);
+    margin-bottom: var(--space-l);
+  }
+  .hero__lede strong {
+    color: var(--cream);
+    font-weight: 600;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: var(--space-l);
+  }
+  .btn--ghost-dark {
+    --btn-fg: var(--cream);
+    border-color: oklch(0.86 0.028 72 / 0.4);
+  }
+  .btn--ghost-dark:hover {
+    background: oklch(0.96 0.02 74 / 0.12);
+    border-color: var(--cream);
+  }
+
+  .hero__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(1.2rem, 4vw, 2.6rem);
+    padding-top: var(--space-m);
+    border-top: 1px solid oklch(0.86 0.028 72 / 0.22);
+    margin: 0;
+  }
+  .hero__fact dt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--cream-mute);
+    margin-bottom: 0.2rem;
+  }
+  .hero__fact dd {
+    margin: 0;
+    font-weight: 600;
+    color: var(--cream);
+    font-size: 0.98rem;
+  }
+
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 1.4rem;
+    translate: -50% 0;
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: var(--r-pill);
+    color: var(--cream);
+    border: 1px solid oklch(0.86 0.028 72 / 0.3);
+    background: oklch(0.27 0.082 36 / 0.4);
+    animation: nudge 2.4s var(--ease-out-quart) infinite;
+  }
+
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(5px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .hero__scroll {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .hero__scroll {
+      animation: none;
+    }
+  }
+</style>

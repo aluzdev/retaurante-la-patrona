@@ -1,0 +1,98 @@
+/* ============================================================
+   La Patrona — design tokens
+   Palette mood: "cocina de fonda al mediodía" — barro cocido,
+   comal caliente, cempasúchil y mantel de flores. Warmth lives in
+   the brand colors + photography, NOT in a generic cream body.
+   Strategy: committed / full-palette. OKLCH throughout.
+   ============================================================ */
+
+:root {
+  /* -- Brand ---------------------------------------------------- */
+  --guajillo:        oklch(0.505 0.150 40);   /* primary — barro / chile rojo */
+  --guajillo-ink:    oklch(0.435 0.140 38);   /* darker, for text on light    */
+  --barro:           oklch(0.340 0.100 38);   /* deep oxblood — drenched hero  */
+  --barro-deep:      oklch(0.270 0.082 36);   /* darkest clay                  */
+
+  --cempasuchil:     oklch(0.800 0.150 78);   /* accent — marigold (fills)     */
+  --cempasuchil-deep:oklch(0.545 0.142 58);   /* accent as TEXT on light (≥4.5:1)*/
+
+  --whatsapp:        oklch(0.700 0.160 150);  /* send-order CTA (recognizable) */
+  --whatsapp-strong: oklch(0.625 0.150 150);
+
+  /* -- Surfaces (working area — warm white, clay-tinted, NOT cream) */
+  --bg:        oklch(0.985 0.006 40);
+  --surface:   oklch(0.968 0.010 42);
+  --surface-2: oklch(0.940 0.013 44);
+  --line:      oklch(0.888 0.016 45);
+  --line-soft: oklch(0.925 0.012 44);
+
+  /* -- Ink ------------------------------------------------------ */
+  --ink:      oklch(0.245 0.030 40);          /* body — warm near-black        */
+  --ink-soft: oklch(0.360 0.032 40);
+  --muted:    oklch(0.470 0.030 42);          /* secondary text                */
+
+  /* -- On-dark (text over barro hero) --------------------------- */
+  --cream:      oklch(0.962 0.020 74);
+  --cream-soft: oklch(0.860 0.028 72);
+  --cream-mute: oklch(0.740 0.032 68);
+
+  /* -- Semantic ------------------------------------------------- */
+  --focus: oklch(0.640 0.150 66);             /* cempasuchil-deep, high-vis    */
+
+  /* -- Typography ---------------------------------------------- */
+  --font-display: 'Young Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Hanken Grotesk Variable', 'Hanken Grotesk', system-ui,
+    -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Fluid type scale — 1.25 (major third), clamp for headings */
+  --step--1: clamp(0.83rem, 0.80rem + 0.15vw, 0.92rem);
+  --step-0:  clamp(1rem, 0.96rem + 0.20vw, 1.13rem);
+  --step-1:  clamp(1.20rem, 1.10rem + 0.50vw, 1.55rem);
+  --step-2:  clamp(1.55rem, 1.35rem + 1.00vw, 2.25rem);
+  --step-3:  clamp(2.00rem, 1.65rem + 1.75vw, 3.15rem);
+  --step-4:  clamp(2.55rem, 1.95rem + 3.00vw, 4.40rem);
+  --step-5:  clamp(3.10rem, 2.10rem + 5.00vw, 5.60rem);
+
+  /* -- Spacing (fluid rhythm) ---------------------------------- */
+  --space-3xs: 0.25rem;
+  --space-2xs: 0.5rem;
+  --space-xs:  0.75rem;
+  --space-s:   1rem;
+  --space-m:   1.5rem;
+  --space-l:   clamp(2rem, 1.5rem + 2vw, 3rem);
+  --space-xl:  clamp(3rem, 2.2rem + 3.5vw, 5rem);
+  --space-2xl: clamp(4.5rem, 3.2rem + 5vw, 7.5rem);
+
+  /* -- Radius (restrained — cards top out ~16px) --------------- */
+  --r-xs:   6px;
+  --r-sm:   9px;
+  --r-md:   13px;
+  --r-lg:   16px;
+  --r-pill: 999px;
+
+  /* -- Shadow (warm-tinted, defined, single — no ghost cards) -- */
+  --shadow-sm: 0 1px 2px oklch(0.34 0.10 38 / 0.10);
+  --shadow-md: 0 6px 20px -8px oklch(0.34 0.10 38 / 0.28);
+  --shadow-lg: 0 18px 46px -18px oklch(0.27 0.082 36 / 0.42);
+
+  /* -- Layout --------------------------------------------------- */
+  --container: 74rem;
+  --measure: 62ch;
+  --header-h: 4.25rem;
+
+  /* -- Motion --------------------------------------------------- */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur-mid:  260ms;
+  --dur-slow: 520ms;
+
+  /* -- Z-index scale (semantic) -------------------------------- */
+  --z-base:     0;
+  --z-raised:   10;
+  --z-sticky:   100;
+  --z-header:   200;
+  --z-backdrop: 900;
+  --z-drawer:   1000;
+  --z-toast:    1100;
+}

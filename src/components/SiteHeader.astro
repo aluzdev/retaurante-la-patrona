@@ -1,0 +1,168 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<header class="site-header" data-header>
+  <div class="container site-header__inner">
+    <a class="brand" href="#top" aria-label={`${site.fullName} — inicio`}>
+      <span class="brand__mark" aria-hidden="true">LP</span>
+      <span class="brand__name">
+        La Patrona
+        <span class="brand__sub">Fondita casera</span>
+      </span>
+    </a>
+
+    <nav class="site-nav" aria-label="Secciones">
+      <a href="#menu">Menú</a>
+      <a href="#fondita">La fondita</a>
+      <a href="#visita">Cómo llegar</a>
+    </nav>
+
+    <div class="site-header__actions">
+      <a
+        class="wa-chip"
+        href={`https://wa.me/${site.whatsappNumber}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <Icon name="whatsapp" size={20} />
+        <span>
+          <span class="wa-chip__label">WhatsApp</span>
+          <span class="wa-chip__num">{site.whatsappDisplay}</span>
+        </span>
+      </a>
+      <a class="btn btn--sm" href="#menu">Armar pedido</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: color-mix(in oklab, var(--bg) 82%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color var(--dur-mid) var(--ease-out-quart),
+      border-color var(--dur-mid) var(--ease-out-quart),
+      box-shadow var(--dur-mid) var(--ease-out-quart);
+  }
+  .site-header[data-scrolled] {
+    background: color-mix(in oklab, var(--bg) 94%, transparent);
+    border-bottom-color: var(--line-soft);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .site-header__inner {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    gap: var(--space-m);
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-right: auto;
+  }
+  .brand__mark {
+    display: grid;
+    place-items: center;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: var(--r-md);
+    background: var(--guajillo);
+    color: var(--cream);
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    box-shadow: var(--shadow-sm);
+  }
+  .brand__name {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    color: var(--ink);
+  }
+  .brand__sub {
+    font-family: var(--font-body);
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+  }
+
+  .site-nav {
+    display: none;
+    gap: clamp(1rem, 2vw, 1.9rem);
+    font-weight: 500;
+    font-size: var(--step--1);
+  }
+  .site-nav a {
+    color: var(--ink-soft);
+    padding-block: 0.25rem;
+    border-bottom: 2px solid transparent;
+    transition: color var(--dur-fast), border-color var(--dur-fast);
+  }
+  .site-nav a:hover {
+    color: var(--guajillo-ink);
+    border-bottom-color: var(--cempasuchil);
+  }
+
+  .site-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .wa-chip {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem 0.4rem 0.6rem;
+    border-radius: var(--r-pill);
+    color: var(--whatsapp-strong);
+    background: color-mix(in oklab, var(--whatsapp) 14%, var(--bg));
+    line-height: 1.05;
+    transition: background-color var(--dur-fast);
+  }
+  .wa-chip:hover {
+    background: color-mix(in oklab, var(--whatsapp) 22%, var(--bg));
+  }
+  .wa-chip__label {
+    display: block;
+    font-size: 0.66rem;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .wa-chip__num {
+    display: block;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .btn--sm {
+    min-height: 40px;
+    padding: 0.5rem 1.05rem;
+    font-size: var(--step--1);
+  }
+
+  @media (min-width: 640px) {
+    .wa-chip {
+      display: inline-flex;
+    }
+  }
+  @media (min-width: 900px) {
+    .site-nav {
+      display: flex;
+    }
+  }
+</style>

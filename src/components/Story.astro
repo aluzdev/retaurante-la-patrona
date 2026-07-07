@@ -1,0 +1,273 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<section class="fondita" id="fondita">
+  <div class="container fondita__grid">
+    <div class="fondita__media">
+      <img
+        src="/images/fondita.jpg"
+        alt="Guiso casero recién hecho servido en La Patrona"
+        width="1200"
+        height="1400"
+        loading="lazy"
+        decoding="async"
+      />
+      <span class="fondita__stamp">
+        <strong>{site.years}</strong> años<br />de sazón
+      </span>
+    </div>
+
+    <div class="fondita__body">
+      <p class="fondita__kicker">La fondita</p>
+      <h2 class="fondita__title">Comida hecha en casa, servida con cariño</h2>
+      <p class="fondita__lead">
+        Somos una fondita de barrio en {site.address.colonia}. Cocinamos como en casa:
+        el consomé caliente, el arroz recién hecho, la salsa molcajeteada y el guiso del
+        día que cambia según lo que se antoje. Llevamos {site.years} años dando de comer
+        a las familias de Azcapotzalco.
+      </p>
+      <p class="fondita__lead">
+        Pedir siempre fue de boca en boca. Con esta página queremos que sea más fácil:
+        aquí ves todo lo que hacemos y armas tu pedido sin tener que venir a preguntar.
+      </p>
+
+      <ul class="fondita__points">
+        <li><Icon name="check" size={18} /> Guisos caseros, hechos al momento</li>
+        <li><Icon name="check" size={18} /> {site.delivery.free}</li>
+        <li><Icon name="check" size={18} /> Pagas con {site.payments.join(', ').replace(/, ([^,]*)$/, ' o $1')}</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="visita" id="visita">
+      <div class="visita__col">
+        <h3><Icon name="pin" size={20} /> Dónde estamos</h3>
+        <p class="visita__big">{site.address.street}</p>
+        <p class="visita__sub">{site.address.colonia}, {site.address.municipio}, CDMX</p>
+        <a class="visita__link" href={site.mapsUrl} target="_blank" rel="noopener">
+          Abrir en Google Maps <Icon name="arrow-right" size={16} />
+        </a>
+      </div>
+
+      <div class="visita__col">
+        <h3><Icon name="clock" size={20} /> Horario</h3>
+        {
+          site.hours.map((h) => (
+            <p class="visita__row">
+              <span>{h.label}</span>
+              <span class="visita__val">{h.value}</span>
+            </p>
+          ))
+        }
+        <p class="visita__note">Abierto todos los días en este horario.</p>
+      </div>
+
+      <div class="visita__col">
+        <h3><Icon name="whatsapp" size={20} /> Contáctanos</h3>
+        <a class="visita__wa" href={`https://wa.me/${site.whatsappNumber}`} target="_blank" rel="noopener">
+          <span>WhatsApp</span>
+          <strong>{site.whatsappDisplay}</strong>
+        </a>
+        <a class="visita__row visita__tel" href={`tel:+52${site.phone}`}>
+          <span><Icon name="phone" size={16} /> Teléfono</span>
+          <span class="visita__val">{site.phoneDisplay}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fondita {
+    background: var(--bg);
+    padding-block: var(--space-2xl);
+  }
+  .fondita__grid {
+    display: grid;
+    gap: clamp(1.5rem, 5vw, 4rem);
+    align-items: center;
+  }
+  @media (min-width: 860px) {
+    .fondita__grid {
+      grid-template-columns: 0.85fr 1fr;
+    }
+  }
+
+  .fondita__media {
+    position: relative;
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    aspect-ratio: 5 / 6;
+    max-height: 34rem;
+  }
+  .fondita__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .fondita__stamp {
+    position: absolute;
+    left: 1rem;
+    bottom: 1rem;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    width: 6.4rem;
+    height: 6.4rem;
+    border-radius: var(--r-pill);
+    background: var(--cempasuchil);
+    color: var(--barro-deep);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1.15;
+    box-shadow: var(--shadow-md);
+    transform: rotate(-8deg);
+  }
+  .fondita__stamp strong {
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    display: block;
+  }
+
+  .fondita__kicker {
+    font-weight: 700;
+    color: var(--cempasuchil-deep);
+    font-size: var(--step--1);
+    margin-bottom: 0.4rem;
+  }
+  .fondita__title {
+    font-size: var(--step-3);
+    line-height: 1.02;
+    margin-bottom: var(--space-s);
+    max-width: 20ch;
+  }
+  .fondita__lead {
+    color: var(--ink-soft);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    max-width: var(--measure);
+    margin-bottom: var(--space-s);
+  }
+  .fondita__points {
+    list-style: none;
+    padding: 0;
+    margin-top: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .fondita__points li {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .fondita__points svg {
+    color: var(--whatsapp-strong);
+    flex-shrink: 0;
+  }
+
+  /* --- visita --- */
+  .visita {
+    margin-top: var(--space-xl);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+    display: grid;
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+  }
+  @media (min-width: 720px) {
+    .visita {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .visita__col {
+    background: var(--surface);
+    padding: var(--space-m);
+  }
+  .visita__col h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: var(--step-0);
+    margin-bottom: var(--space-s);
+  }
+  .visita__col h3 svg {
+    color: var(--guajillo);
+  }
+  .visita__big {
+    font-family: var(--font-display);
+    font-size: var(--step-2);
+    line-height: 1.05;
+  }
+  .visita__sub {
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+  .visita__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: var(--space-s);
+    font-weight: 600;
+    color: var(--guajillo-ink);
+  }
+  .visita__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .visita__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-block: 0.35rem;
+  }
+  .visita__row span:first-child {
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+  .visita__val {
+    font-weight: 700;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .visita__note {
+    margin-top: 0.6rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .visita__wa {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.7rem 0.9rem;
+    border-radius: var(--r-md);
+    background: color-mix(in oklab, var(--whatsapp) 14%, var(--bg));
+    color: var(--ink);
+    transition: background-color var(--dur-fast);
+  }
+  .visita__wa:hover {
+    background: color-mix(in oklab, var(--whatsapp) 24%, var(--bg));
+  }
+  .visita__wa strong {
+    font-size: var(--step-1);
+    color: var(--whatsapp-strong);
+    letter-spacing: -0.01em;
+  }
+  .visita__tel {
+    margin-top: 0.7rem;
+    color: var(--ink);
+  }
+</style>

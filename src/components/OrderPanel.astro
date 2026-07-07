@@ -1,0 +1,615 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+---
+
+<aside class="order" id="order-panel" data-order-panel aria-label="Tu pedido">
+  <div class="order__card">
+    <header class="order__head">
+      <h2 class="order__title">
+        <Icon name="bag" size={22} /> Tu pedido
+        <span class="order__count" data-count hidden>0</span>
+      </h2>
+      <button class="order__close" type="button" data-close aria-label="Cerrar pedido">
+        <Icon name="close" size={22} />
+      </button>
+    </header>
+
+    <div class="order__scroll">
+      <p class="order__empty" data-empty>
+        Aún no agregas nada. Toca <strong>Agregar</strong> en los platillos que se te
+        antojen y aquí se irá armando tu pedido.
+      </p>
+
+      <ul class="order__lines" data-lines aria-live="polite"></ul>
+
+      <div class="order__fields" data-fields hidden>
+        <fieldset class="ofield">
+          <legend>¿Cómo lo quieres?</legend>
+          <div class="ofield__segs" data-order-type>
+            <label class="oseg">
+              <input type="radio" name="order-type" value="A domicilio" checked />
+              <span>A domicilio</span>
+            </label>
+            <label class="oseg">
+              <input type="radio" name="order-type" value="Para llevar" />
+              <span>Para llevar</span>
+            </label>
+            <label class="oseg">
+              <input type="radio" name="order-type" value="Comer en la fondita" />
+              <span>Comer ahí</span>
+            </label>
+          </div>
+        </fieldset>
+
+        <div class="ofield" data-address-wrap>
+          <label class="ofield__label" for="order-address">
+            Dirección de entrega
+          </label>
+          <textarea
+            id="order-address"
+            data-address
+            rows="2"
+            placeholder="Calle y número, colonia, y alguna referencia (portón, color…)"
+          ></textarea>
+          <p class="ofield__hint" data-address-hint>
+            {site.delivery.free}. {site.delivery.extra.toLowerCase()}.
+          </p>
+        </div>
+
+        <fieldset class="ofield">
+          <legend>¿Cómo pagas?</legend>
+          <div class="ofield__segs" data-payment>
+            {
+              site.payments.map((p, i) => (
+                <label class="oseg">
+                  <input type="radio" name="payment" value={p} checked={i === 0} />
+                  <span>{p}</span>
+                </label>
+              ))
+            }
+          </div>
+          <p class="ofield__hint" data-payment-hint hidden>
+            Las transferencias para llevar se hacen antes de la entrega.
+          </p>
+        </fieldset>
+
+        <div class="ofield">
+          <label class="ofield__label" for="order-name">Tu nombre <span>(opcional)</span></label>
+          <input id="order-name" data-cust-name type="text" placeholder="¿A nombre de quién?" />
+        </div>
+      </div>
+    </div>
+
+    <footer class="order__foot" data-foot hidden>
+      <a
+        class="order__send"
+        data-send
+        href={`https://wa.me/${site.whatsappNumber}`}
+        target="_blank"
+        rel="noopener"
+      >
+        <Icon name="whatsapp" size={22} />
+        <span>Enviar pedido por WhatsApp</span>
+      </a>
+      <div class="order__foot-row">
+        <button class="order__clear" type="button" data-clear>Vaciar pedido</button>
+        <span class="order__reassure">Se abre WhatsApp con tu mensaje listo</span>
+      </div>
+    </footer>
+  </div>
+</aside>
+
+<!-- Plantilla de renglón (clonada por JS) -->
+<template id="order-line-tpl">
+  <li class="line" data-key>
+    <div class="line__body">
+      <p class="line__name" data-line-name></p>
+      <p class="line__opts" data-line-opts hidden></p>
+      <button class="line__note-btn" type="button" data-note-edit>
+        <Icon name="note" size={14} />
+        <span data-note-text></span>
+      </button>
+    </div>
+    <div class="line__controls">
+      <div class="qty" role="group" aria-label="Cantidad">
+        <button class="qty__btn" type="button" data-qty="-1" aria-label="Quitar uno">
+          <Icon name="minus" size={16} />
+        </button>
+        <span class="qty__n" data-qty-n>1</span>
+        <button class="qty__btn" type="button" data-qty="1" aria-label="Agregar uno">
+          <Icon name="plus" size={16} />
+        </button>
+      </div>
+      <button class="line__remove" type="button" data-remove aria-label="Quitar del pedido">
+        <Icon name="close" size={18} />
+      </button>
+    </div>
+  </li>
+</template>
+
+<!-- Barra flotante (solo móvil) para abrir el pedido -->
+<button class="order-bar" type="button" data-order-bar hidden>
+  <span class="order-bar__left">
+    <Icon name="bag" size={20} />
+    <span class="order-bar__count" data-bar-count>0</span>
+    <span>Ver pedido</span>
+  </span>
+  <span class="order-bar__cta">Continuar <Icon name="arrow-right" size={18} /></span>
+</button>
+
+<div class="order-backdrop" data-backdrop hidden></div>
+
+<style>
+  .order {
+    /* Desktop: columna pegajosa dentro del grid del menú */
+    position: sticky;
+    top: calc(var(--header-h) + 1rem);
+    align-self: start;
+    max-height: calc(100svh - var(--header-h) - 2rem);
+  }
+  .order__card {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--r-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+  }
+
+  .order__head {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: var(--space-s) var(--space-m);
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--bg);
+  }
+  .order__title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: var(--step-1);
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .order__title svg {
+    color: var(--guajillo);
+  }
+  .order__count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.4rem;
+    border-radius: var(--r-pill);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--cream);
+    background: var(--guajillo);
+  }
+  .order__close {
+    display: none;
+    margin-left: auto;
+    padding: 0.4rem;
+    border-radius: var(--r-pill);
+    color: var(--muted);
+  }
+  .order__close:hover {
+    color: var(--ink);
+    background: var(--surface-2);
+  }
+
+  .order__scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--space-m);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .order__empty {
+    color: var(--muted);
+    font-size: var(--step-0);
+    line-height: 1.5;
+    text-align: left;
+    padding: var(--space-s) 0 var(--space-m);
+  }
+  .order__empty strong {
+    color: var(--guajillo-ink);
+  }
+
+  .order__lines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --- renglón --- */
+  .line {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--line-soft);
+    animation: line-in var(--dur-mid) var(--ease-out-quart);
+  }
+  .line:first-child {
+    border-top: none;
+  }
+  @keyframes line-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .line__body {
+    flex: 1;
+    min-width: 0;
+  }
+  .line__name {
+    font-weight: 700;
+    font-size: var(--step-0);
+    line-height: 1.25;
+    color: var(--ink);
+  }
+  .line__opts {
+    font-size: var(--step--1);
+    color: var(--muted);
+    margin-top: 0.15rem;
+  }
+  .line__note-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--cempasuchil-deep);
+    text-align: left;
+  }
+  .line__note-btn span:empty::before {
+    content: 'Agregar nota';
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .line__note-btn svg {
+    flex-shrink: 0;
+  }
+  .line__note-input {
+    margin-top: 0.35rem;
+    width: 100%;
+    padding: 0.4rem 0.6rem;
+    border: 1.5px solid var(--guajillo);
+    border-radius: var(--r-sm);
+    font-size: 0.82rem;
+  }
+
+  .line__controls {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15rem;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: var(--r-pill);
+    padding: 0.15rem;
+  }
+  .qty__btn {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--r-pill);
+    color: var(--guajillo-ink);
+    transition: background-color var(--dur-fast);
+  }
+  .qty__btn:hover {
+    background: color-mix(in oklab, var(--guajillo) 12%, var(--bg));
+  }
+  .qty__n {
+    min-width: 1.2rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .line__remove {
+    display: grid;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    border-radius: var(--r-pill);
+    color: var(--muted);
+    transition: color var(--dur-fast), background-color var(--dur-fast);
+  }
+  .line__remove:hover {
+    color: var(--guajillo);
+    background: color-mix(in oklab, var(--guajillo) 10%, var(--bg));
+  }
+
+  /* --- campos --- */
+  .order__fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding-top: var(--space-m);
+    border-top: 1px solid var(--line);
+  }
+  .ofield {
+    border: none;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+  .ofield legend,
+  .ofield__label {
+    padding: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 0.5rem;
+  }
+  .ofield__label span {
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .ofield__segs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .oseg {
+    position: relative;
+    display: inline-flex;
+    flex: 1 1 auto;
+  }
+  .oseg input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .oseg span {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--r-md);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-align: center;
+    color: var(--ink-soft);
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    transition:
+      background-color var(--dur-fast),
+      border-color var(--dur-fast),
+      color var(--dur-fast);
+  }
+  .oseg input:checked + span {
+    color: var(--cream);
+    background: var(--guajillo);
+    border-color: var(--guajillo);
+  }
+  .oseg input:focus-visible + span {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .oseg:hover input:not(:checked) + span {
+    border-color: var(--guajillo);
+  }
+
+  .ofield textarea,
+  .ofield input[type='text'] {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1.5px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--bg);
+    font-size: var(--step-0);
+    resize: vertical;
+    transition: border-color var(--dur-fast);
+  }
+  .ofield textarea:focus,
+  .ofield input[type='text']:focus {
+    border-color: var(--guajillo);
+    outline: none;
+  }
+  .ofield textarea[data-invalid],
+  .ofield input[data-invalid] {
+    border-color: var(--guajillo);
+    background: color-mix(in oklab, var(--guajillo) 6%, var(--bg));
+  }
+  .ofield__hint {
+    margin-top: 0.4rem;
+    font-size: 0.76rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .ofield__hint[data-error] {
+    color: var(--guajillo-ink);
+    font-weight: 600;
+  }
+
+  /* --- footer / enviar --- */
+  .order__foot {
+    padding: var(--space-s) var(--space-m) var(--space-m);
+    border-top: 1px solid var(--line-soft);
+    background: var(--bg);
+  }
+  .order__send {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    width: 100%;
+    min-height: 54px;
+    border-radius: var(--r-md);
+    font-weight: 700;
+    font-size: var(--step-0);
+    color: var(--cream);
+    background: var(--whatsapp);
+    box-shadow: 0 8px 20px -10px oklch(0.7 0.16 150 / 0.9);
+    transition:
+      background-color var(--dur-fast) var(--ease-out-quart),
+      transform var(--dur-fast) var(--ease-out-quart);
+  }
+  .order__send:hover {
+    background: var(--whatsapp-strong);
+    transform: translateY(-2px);
+  }
+  .order__send[aria-disabled='true'] {
+    background: var(--surface-2);
+    color: var(--muted);
+    box-shadow: none;
+    pointer-events: none;
+  }
+  .order__foot-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.7rem;
+  }
+  .order__clear {
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .order__clear:hover {
+    color: var(--guajillo);
+  }
+  .order__reassure {
+    font-size: 0.74rem;
+    color: var(--muted);
+    text-align: right;
+  }
+
+  /* --- barra flotante móvil --- */
+  .order-bar {
+    position: fixed;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: var(--z-sticky);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    border-radius: var(--r-lg);
+    color: var(--cream);
+    background: var(--guajillo);
+    box-shadow: var(--shadow-lg);
+    animation: bar-in var(--dur-mid) var(--ease-out-expo);
+  }
+  @keyframes bar-in {
+    from {
+      transform: translateY(120%);
+    }
+    to {
+      transform: none;
+    }
+  }
+  .order-bar__left {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 700;
+  }
+  .order-bar__count {
+    display: inline-grid;
+    place-items: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.35rem;
+    border-radius: var(--r-pill);
+    background: var(--cempasuchil);
+    color: var(--barro-deep);
+    font-size: 0.8rem;
+  }
+  .order-bar__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 600;
+    font-size: var(--step--1);
+  }
+
+  .order-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-backdrop);
+    background: oklch(0.27 0.082 36 / 0.5);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    animation: fade-in var(--dur-fast) forwards;
+  }
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* ====== Móvil: el panel es una hoja inferior ====== */
+  @media (max-width: 1023px) {
+    .order {
+      position: fixed;
+      inset: auto 0 0 0;
+      top: auto;
+      z-index: var(--z-drawer);
+      max-height: min(88svh, 640px);
+      transform: translateY(100%);
+      transition: transform var(--dur-slow) var(--ease-out-expo);
+    }
+    .order[data-open] {
+      transform: none;
+    }
+    .order__card {
+      max-height: min(88svh, 640px);
+      border-radius: var(--r-lg) var(--r-lg) 0 0;
+      border-bottom: none;
+    }
+    .order__close {
+      display: grid;
+    }
+  }
+  @media (min-width: 1024px) {
+    .order-bar,
+    .order-backdrop {
+      display: none !important;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .order,
+    .order-bar,
+    .order__send:hover {
+      transition: none;
+      animation: none;
+    }
+    .line {
+      animation: none;
+    }
+  }
+</style>

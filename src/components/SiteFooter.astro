@@ -1,0 +1,98 @@
+---
+import { site } from '../data/site';
+import Icon from './Icon.astro';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <div class="footer__brand">
+      <span class="brand__mark" aria-hidden="true">LP</span>
+      <div>
+        <p class="footer__name">La Patrona Fondita</p>
+        <p class="footer__tag">Comida casera en {site.address.colonia}, Azcapotzalco · {site.years} años</p>
+      </div>
+    </div>
+
+    <a class="footer__cta" href={`https://wa.me/${site.whatsappNumber}`} target="_blank" rel="noopener">
+      <Icon name="whatsapp" size={20} /> Pedir por WhatsApp · {site.whatsappDisplay}
+    </a>
+  </div>
+
+  <div class="container footer__bottom">
+    <p>© {year} La Patrona Fondita · Hecho con cariño en Azcapotzalco.</p>
+    <p>{site.address.full}</p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--barro-deep);
+    color: var(--cream-soft);
+    padding-block: var(--space-xl) var(--space-l);
+    padding-bottom: calc(var(--space-l) + 5rem);
+  }
+  @media (min-width: 1024px) {
+    .footer {
+      padding-bottom: var(--space-l);
+    }
+  }
+  .footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-m);
+    padding-bottom: var(--space-l);
+    border-bottom: 1px solid oklch(0.86 0.028 72 / 0.18);
+  }
+  .footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .footer__brand .brand__mark {
+    width: 2.8rem;
+    height: 2.8rem;
+    background: var(--cempasuchil);
+    color: var(--barro-deep);
+    font-size: 1.15rem;
+  }
+  .footer__name {
+    font-family: var(--font-display);
+    font-size: var(--step-1);
+    color: var(--cream);
+  }
+  .footer__tag {
+    font-size: var(--step--1);
+    color: var(--cream-mute);
+  }
+  .footer__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--r-pill);
+    font-weight: 700;
+    color: var(--barro-deep);
+    background: var(--cempasuchil);
+    transition: transform var(--dur-fast) var(--ease-out-quart);
+  }
+  .footer__cta:hover {
+    transform: translateY(-2px);
+  }
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: var(--space-m);
+    font-size: 0.8rem;
+    color: var(--cream-mute);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .footer__cta:hover {
+      transform: none;
+    }
+  }
+</style>
