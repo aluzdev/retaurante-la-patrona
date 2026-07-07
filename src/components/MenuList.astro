@@ -18,11 +18,11 @@ const carta = menu.filter((s) => s.id !== 'sopas');
     </p>
   </header>
 
-  <div class="switch" role="tablist" aria-label="Tipo de pedido" data-switch>
-    <button class="switch__btn" type="button" role="tab" aria-selected="true" data-view="corrida">
+  <div class="switch" role="group" aria-label="Tipo de pedido" data-switch>
+    <button class="switch__btn" type="button" aria-pressed="true" data-view="corrida">
       Comida corrida
     </button>
-    <button class="switch__btn" type="button" role="tab" aria-selected="false" data-view="carta">
+    <button class="switch__btn" type="button" aria-pressed="false" data-view="carta">
       A la carta
     </button>
   </div>
@@ -172,12 +172,12 @@ const carta = menu.filter((s) => s.id !== 'sopas');
     color: var(--ink-soft);
     transition: color var(--dur-fast), background-color var(--dur-fast);
   }
-  .switch__btn[aria-selected='true'] {
+  .switch__btn[aria-pressed='true'] {
     color: var(--cream);
     background: var(--guajillo);
     box-shadow: var(--shadow-sm);
   }
-  .switch__btn[aria-selected='false']:hover {
+  .switch__btn[aria-pressed='false']:hover {
     color: var(--guajillo-ink);
   }
 

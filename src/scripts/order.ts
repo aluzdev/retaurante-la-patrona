@@ -115,7 +115,7 @@ function initSwitch() {
   btns.forEach((btn) =>
     btn.addEventListener('click', () => {
       const view = (btn as HTMLElement).dataset.view;
-      btns.forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
+      btns.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
       panels.forEach((p) => ((p as HTMLElement).hidden = (p as HTMLElement).dataset.panel !== view));
     })
   );
@@ -423,7 +423,16 @@ function init() {
         el.addressHint.textContent = 'Necesitamos tu dirección para llevártelo. 🚲';
         addr.focus();
       }
+      return;
     }
+    // pedido enviado: vaciar los platillos pero conservar dirección/nombre/pago.
+    // Con retraso para que el enlace ya se haya abierto con el mensaje completo.
+    setTimeout(() => {
+      lines = [];
+      render();
+      save();
+      closeDrawer();
+    }, 1200);
   });
 
   // vaciar
