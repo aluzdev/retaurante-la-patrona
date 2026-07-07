@@ -57,37 +57,88 @@ const keyFor = (itemId: string, opts: Opt[], note: string) =>
 const totalQty = () => lines.reduce((n, l) => n + l.qty, 0);
 
 /* ---------- agregar desde una tarjeta ---------- */
+// Sin opciones ni nota al tocar: se agrega el platillo; los detalles se
+// escriben como nota en el pedido.
 function addFromCard(card: HTMLElement) {
   const itemId = card.dataset.id!;
   const name = card.dataset.name!;
-  const opts: Opt[] = $$('[data-opt]', card).map((group) => {
-    const label = (group as HTMLElement).dataset.optLabel!;
-    const checked = group.querySelector<HTMLInputElement>('input:checked');
-    return { label, value: checked ? checked.value : '' };
-  });
-  const noteInput = $<HTMLInputElement>('[data-note]', card);
-  const note = noteInput?.value.trim() ?? '';
-
-  const key = keyFor(itemId, opts, note);
+  const key = keyFor(itemId, [], '');
   const existing = lines.find((l) => l.key === key);
   if (existing) existing.qty += 1;
-  else lines.push({ key, itemId, name, opts, note, qty: 1 });
+  else lines.push({ key, itemId, name, opts: [], note: '', qty: 1 });
 
-  // feedback visual + reset de la nota
   card.dataset.justAdded = '';
-  setTimeout(() => delete card.dataset.justAdded, 700);
-  if (noteInput) {
-    noteInput.value = '';
-    const wrap = card.querySelector<HTMLElement>('[data-note-wrap]');
-    const btn = card.querySelector<HTMLElement>('[data-note-btn]');
-    if (wrap) wrap.hidden = true;
-    if (btn) delete btn.dataset.open;
-  }
+  setTimeout(() => delete card.dataset.justAdded, 500);
 
   render();
   save();
   pulseBar();
   announce(`${name} agregado a tu pedido`);
+}
+
+/* ---------- comida corrida (el 95%) ---------- */
+function addComidaCorrida() {
+  const guiso = $<HTMLSelectElement>('[data-corrida-guiso]')?.value ?? '';
+  const sopa = $<HTMLInputElement>('[data-corrida-sopa] input:checked')?.value ?? '';
+  const guarn = $<HTMLInputElement>('[data-corrida-guarn] input:checked')?.value ?? '';
+  const noteEl = $<HTMLInputElement>('[data-corrida-note]');
+  const note = noteEl?.value.trim() ?? '';
+
+  const opts: Opt[] = [
+    { label: 'Guisado', value: guiso },
+    { label: 'Sopa', value: sopa },
+    { label: 'Para acompañar', value: guarn },
+    { label: 'Bebida', value: 'Agua del día' },
+  ];
+  const key = keyFor('comida-corrida', opts, note);
+  const existing = lines.find((l) => l.key === key);
+  if (existing) existing.qty += 1;
+  else lines.push({ key, itemId: 'comida-corrida', name: 'Comida corrida', opts, note, qty: 1 });
+
+  const btn = $('[data-corrida-add]');
+  if (btn) {
+    btn.dataset.added = '';
+    setTimeout(() => delete (btn as HTMLElement).dataset.added, 900);
+  }
+  if (noteEl) noteEl.value = '';
+
+  render();
+  save();
+  pulseBar();
+  announce('Comida corrida agregada a tu pedido');
+}
+
+/* ---------- switch corrida / a la carta ---------- */
+function initSwitch() {
+  const btns = $$('[data-switch] .switch__btn');
+  const panels = $$('[data-panel]');
+  btns.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const view = (btn as HTMLElement).dataset.view;
+      btns.forEach((b) => b.setAttribute('aria-selected', String(b === btn)));
+      panels.forEach((p) => ((p as HTMLElement).hidden = (p as HTMLElement).dataset.panel !== view));
+    })
+  );
+}
+
+/* Marca cada renglón del menú con su conteo (suma de líneas de ese platillo) */
+function updateMenuRows() {
+  const counts = new Map<string, number>();
+  for (const l of lines) counts.set(l.itemId, (counts.get(l.itemId) ?? 0) + l.qty);
+  $$('[data-dish]').forEach((card) => {
+    const n = counts.get((card as HTMLElement).dataset.id!) ?? 0;
+    const badge = $('[data-add-count]', card);
+    if (n > 0) {
+      (card as HTMLElement).dataset.inOrder = '';
+      if (badge) {
+        badge.textContent = String(n);
+        badge.hidden = false;
+      }
+    } else {
+      delete (card as HTMLElement).dataset.inOrder;
+      if (badge) badge.hidden = true;
+    }
+  });
 }
 
 /* ---------- render ---------- */
@@ -147,6 +198,7 @@ function render() {
 
   syncFields();
   updateSend();
+  updateMenuRows();
 }
 
 function changeQty(key: string, delta: number) {
@@ -251,7 +303,6 @@ const backdrop = $('[data-backdrop]')!;
 let lastFocus: HTMLElement | null = null;
 
 function openDrawer() {
-  if (window.matchMedia('(min-width: 1024px)').matches) return;
   lastFocus = document.activeElement as HTMLElement;
   panel.dataset.open = '';
   backdrop.hidden = false;
@@ -272,7 +323,7 @@ function onEsc(e: KeyboardEvent) {
 
 function pulseBar() {
   const bar = el.bar;
-  if (!bar || window.matchMedia('(min-width: 1024px)').matches) return;
+  if (!bar) return;
   bar.animate(
     [{ transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }],
     { duration: 340, easing: 'cubic-bezier(0.25,1,0.5,1)' }
@@ -308,20 +359,12 @@ function initHeader() {
 function init() {
   load();
 
-  // botones de nota en las tarjetas
+  // comida corrida + switch de vistas
+  initSwitch();
+  $('[data-corrida-add]')?.addEventListener('click', addComidaCorrida);
+
+  // agregar al tocar el platillo (a la carta)
   $$('[data-dish]').forEach((card) => {
-    const noteBtn = $('[data-note-btn]', card);
-    const noteWrap = $('[data-note-wrap]', card);
-    noteBtn?.addEventListener('click', () => {
-      const open = noteWrap!.hidden;
-      noteWrap!.hidden = !open;
-      if (open) {
-        noteBtn.dataset.open = '';
-        $<HTMLInputElement>('[data-note]', card)?.focus();
-      } else {
-        delete (noteBtn as HTMLElement).dataset.open;
-      }
-    });
     $('[data-add]', card)?.addEventListener('click', () => addFromCard(card as HTMLElement));
   });
 

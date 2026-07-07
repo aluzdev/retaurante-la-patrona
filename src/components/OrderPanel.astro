@@ -32,10 +32,6 @@ import Icon from './Icon.astro';
               <span>A domicilio</span>
             </label>
             <label class="oseg">
-              <input type="radio" name="order-type" value="Para llevar" />
-              <span>Para llevar</span>
-            </label>
-            <label class="oseg">
               <input type="radio" name="order-type" value="Comer en la fondita" />
               <span>Comer ahí</span>
             </label>
@@ -70,7 +66,7 @@ import Icon from './Icon.astro';
             }
           </div>
           <p class="ofield__hint" data-payment-hint hidden>
-            Las transferencias para llevar se hacen antes de la entrega.
+            Las transferencias a domicilio se hacen antes de la entrega.
           </p>
         </fieldset>
 
@@ -141,22 +137,30 @@ import Icon from './Icon.astro';
 <div class="order-backdrop" data-backdrop hidden></div>
 
 <style>
+  /* Cajón: hoja inferior en móvil, se desliza desde la derecha en desktop.
+     Nunca ocupa espacio del layout; se abre bajo demanda. */
   .order {
-    /* Desktop: columna pegajosa dentro del grid del menú */
-    position: sticky;
-    top: calc(var(--header-h) + 1rem);
-    align-self: start;
-    max-height: calc(100svh - var(--header-h) - 2rem);
+    position: fixed;
+    inset: auto 0 0 0;
+    top: auto;
+    z-index: var(--z-drawer);
+    max-height: min(88svh, 640px);
+    transform: translateY(100%);
+    transition: transform var(--dur-slow) var(--ease-out-expo);
+  }
+  .order[data-open] {
+    transform: none;
   }
   .order__card {
     display: flex;
     flex-direction: column;
-    max-height: inherit;
+    max-height: min(88svh, 640px);
     background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: var(--r-lg);
+    border-bottom: none;
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
     overflow: hidden;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
   }
 
   .order__head {
@@ -193,7 +197,7 @@ import Icon from './Icon.astro';
     background: var(--guajillo);
   }
   .order__close {
-    display: none;
+    display: grid;
     margin-left: auto;
     padding: 0.4rem;
     border-radius: var(--r-pill);
@@ -572,33 +576,32 @@ import Icon from './Icon.astro';
     }
   }
 
-  /* ====== Móvil: el panel es una hoja inferior ====== */
-  @media (max-width: 1023px) {
+  /* ====== Desktop: cajón que entra desde la derecha ====== */
+  @media (min-width: 1024px) {
     .order {
-      position: fixed;
-      inset: auto 0 0 0;
-      top: auto;
-      z-index: var(--z-drawer);
-      max-height: min(88svh, 640px);
-      transform: translateY(100%);
-      transition: transform var(--dur-slow) var(--ease-out-expo);
+      inset: 0 0 0 auto;
+      top: 0;
+      max-height: none;
+      width: min(26rem, 92vw);
+      transform: translateX(100%);
     }
     .order[data-open] {
       transform: none;
     }
     .order__card {
-      max-height: min(88svh, 640px);
-      border-radius: var(--r-lg) var(--r-lg) 0 0;
-      border-bottom: none;
+      height: 100dvh;
+      max-height: 100dvh;
+      border-radius: var(--r-lg) 0 0 var(--r-lg);
+      border-bottom: 1px solid var(--line);
     }
-    .order__close {
-      display: grid;
-    }
-  }
-  @media (min-width: 1024px) {
-    .order-bar,
-    .order-backdrop {
-      display: none !important;
+    /* la barra flotante se vuelve una píldora abajo a la derecha */
+    .order-bar {
+      left: auto;
+      right: 1.5rem;
+      bottom: 1.5rem;
+      width: auto;
+      min-width: 15rem;
+      border-radius: var(--r-pill);
     }
   }
   @media (prefers-reduced-motion: reduce) {

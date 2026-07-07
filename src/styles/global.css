@@ -17,6 +17,11 @@
   margin: 0;
 }
 
+/* el atributo hidden siempre gana, aunque el elemento tenga display: flex */
+[hidden] {
+  display: none !important;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;

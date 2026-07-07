@@ -17,15 +17,13 @@ import SiteFooter from '../components/SiteFooter.astro';
     <HowItWorks />
 
     <section class="menu-section section" id="menu" aria-label="Menú y pedido">
-      <div class="container menu-layout">
-        <div class="menu-layout__list">
+      <div class="container">
+        <div class="menu-wrap">
           <MenuList />
-        </div>
-        <div class="menu-layout__aside">
-          <OrderPanel />
         </div>
       </div>
     </section>
+    <OrderPanel />
 
     <Story />
   </main>
@@ -38,15 +36,10 @@ import SiteFooter from '../components/SiteFooter.astro';
     background: var(--bg);
     padding-block: var(--space-xl);
   }
-  .menu-layout {
-    display: grid;
-    gap: clamp(1.5rem, 3vw, 3rem);
-    align-items: start;
-  }
-  @media (min-width: 1024px) {
-    .menu-layout {
-      grid-template-columns: minmax(0, 1fr) 22.5rem;
-    }
+  /* columna única, centrada y legible — el pedido vive en un cajón */
+  .menu-wrap {
+    max-width: 48rem;
+    margin-inline: auto;
   }
 </style>
 

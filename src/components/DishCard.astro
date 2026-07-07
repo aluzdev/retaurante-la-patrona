@@ -6,269 +6,154 @@ interface Props {
   item: MenuItem;
 }
 const { item } = Astro.props;
-const hasOptions = !!item.options?.length;
 ---
 
-<article
-  class="dish"
-  data-dish
-  data-id={item.id}
-  data-name={item.name}
->
-  <div class="dish__head">
-    <div class="dish__title-row">
-      <h3 class="dish__name">{item.name}</h3>
-      {item.price && <span class="dish__price">{item.price}</span>}
-    </div>
-    {item.tag && <span class="dish__tag">{item.tag}</span>}
+<article class="dish" data-dish data-id={item.id} data-name={item.name}>
+  <div class="dish__text">
+    <h4 class="dish__name">
+      {item.name}
+      {item.tag && <span class="dish__tag">{item.tag}</span>}
+    </h4>
     {item.desc && <p class="dish__desc">{item.desc}</p>}
   </div>
 
-  {
-    hasOptions && (
-      <div class="dish__options">
-        {item.options!.map((group) => (
-          <fieldset class="opt" data-opt data-opt-label={group.label}>
-            <legend class="opt__legend">{group.label}</legend>
-            <div class="opt__choices">
-              {group.choices.map((choice, i) => (
-                <label class="seg">
-                  <input
-                    type="radio"
-                    name={`${item.id}-${group.id}`}
-                    value={choice}
-                    checked={i === 0}
-                  />
-                  <span>{choice}</span>
-                </label>
-              ))}
-            </div>
-          </fieldset>
-        ))}
-      </div>
-    )
-  }
-
-  <div class="dish__note-wrap" data-note-wrap hidden>
-    <label class="sr-only" for={`note-${item.id}`}>Nota para {item.name}</label>
-    <input
-      class="dish__note"
-      id={`note-${item.id}`}
-      data-note
-      type="text"
-      maxlength="120"
-      placeholder={item.noteHint ?? 'Alguna indicación…'}
-    />
-  </div>
-
-  <div class="dish__actions">
-    <button class="dish__note-btn" type="button" data-note-btn>
-      <Icon name="note" size={16} /> <span data-note-label>Nota</span>
-    </button>
-    <button class="dish__add" type="button" data-add>
-      <Icon name="plus" size={18} /> Agregar
-    </button>
-  </div>
+  <button class="dish__add" type="button" data-add aria-label={`Agregar ${item.name} al pedido`}>
+    <span class="dish__add-plus"><Icon name="plus" size={20} /></span>
+    <span class="dish__add-count" data-add-count hidden>0</span>
+  </button>
 </article>
 
 <style>
   .dish {
     display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-    padding: var(--space-m);
-    background: var(--bg);
-    border: 1px solid var(--line-soft);
-    border-radius: var(--r-lg);
-    transition:
-      border-color var(--dur-fast) var(--ease-out-quart),
-      box-shadow var(--dur-fast) var(--ease-out-quart);
+    align-items: flex-start;
+    gap: var(--space-m);
+    padding: var(--space-s) 0;
+    border-top: 1px solid var(--line-soft);
   }
-  .dish:hover,
-  .dish:focus-within {
-    border-color: var(--line);
-    box-shadow: var(--shadow-sm);
-  }
-  .dish[data-just-added] {
-    border-color: var(--whatsapp);
-    box-shadow: 0 0 0 3px color-mix(in oklab, var(--whatsapp) 22%, transparent);
+  .dish:first-child {
+    border-top: none;
   }
 
-  .dish__title-row {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.75rem;
+  .dish__text {
+    flex: 1;
+    min-width: 0;
   }
   .dish__name {
-    font-family: var(--font-body);
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-weight: 400;
     font-size: var(--step-1);
-    letter-spacing: -0.01em;
     line-height: 1.15;
-  }
-  .dish__price {
-    flex-shrink: 0;
-    font-weight: 700;
-    font-size: 0.98rem;
-    color: var(--guajillo-ink);
-    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.005em;
+    color: var(--ink);
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
   .dish__tag {
-    align-self: flex-start;
-    font-size: 0.68rem;
+    font-family: var(--font-body);
+    font-size: 0.64rem;
     font-weight: 700;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--cempasuchil-deep);
-    background: color-mix(in oklab, var(--cempasuchil) 26%, var(--bg));
-    padding: 0.15rem 0.5rem;
-    border-radius: var(--r-pill);
+    transform: translateY(-1px);
   }
   .dish__desc {
     color: var(--muted);
     font-size: var(--step--1);
     line-height: 1.45;
+    margin-top: 0.2rem;
+    max-width: 42ch;
   }
 
-  .dish__options {
-    display: flex;
-    flex-direction: column;
-    gap: 0.7rem;
-  }
-  .opt {
-    border: none;
-    padding: 0;
-    margin: 0;
-    min-width: 0;
-  }
-  .opt__legend {
-    padding: 0;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.01em;
-    color: var(--muted);
-    margin-bottom: 0.35rem;
-  }
-  .opt__choices {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .seg {
-    position: relative;
-    display: inline-flex;
-  }
-  .seg input {
-    position: absolute;
-    opacity: 0;
-    inset: 0;
-    margin: 0;
-    cursor: pointer;
-  }
-  .seg span {
-    display: inline-flex;
-    align-items: center;
-    min-height: 36px;
-    padding: 0.35rem 0.85rem;
-    border-radius: var(--r-pill);
-    font-size: var(--step--1);
-    font-weight: 600;
-    color: var(--ink-soft);
-    background: var(--surface);
-    border: 1.5px solid var(--line);
-    transition:
-      background-color var(--dur-fast),
-      border-color var(--dur-fast),
-      color var(--dur-fast);
-  }
-  .seg input:checked + span {
-    color: var(--cream);
-    background: var(--guajillo);
-    border-color: var(--guajillo);
-  }
-  .seg input:focus-visible + span {
-    outline: 3px solid var(--focus);
-    outline-offset: 2px;
-  }
-  .seg:hover input:not(:checked) + span {
-    border-color: var(--guajillo);
-    color: var(--guajillo-ink);
-  }
-
-  .dish__note {
-    width: 100%;
-    min-height: 44px;
-    padding: 0.55rem 0.8rem;
-    border-radius: var(--r-md);
-    border: 1.5px solid var(--line);
-    background: var(--surface);
-    font-size: var(--step--1);
-    transition: border-color var(--dur-fast);
-  }
-  .dish__note::placeholder {
-    color: color-mix(in oklab, var(--muted) 88%, var(--bg));
-  }
-  .dish__note:focus {
-    border-color: var(--guajillo);
-    outline: none;
-  }
-
-  .dish__actions {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-top: auto;
-    padding-top: 0.15rem;
-  }
-  .dish__note-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    min-height: 40px;
-    padding: 0.4rem 0.7rem;
-    border-radius: var(--r-pill);
-    font-size: var(--step--1);
-    font-weight: 600;
-    color: var(--muted);
-    transition: color var(--dur-fast), background-color var(--dur-fast);
-  }
-  .dish__note-btn:hover {
-    color: var(--guajillo-ink);
-    background: var(--surface);
-  }
-  .dish__note-btn[data-open] {
-    color: var(--guajillo-ink);
-  }
-
+  /* Un solo control: el botón agregar. Sin fill + shadow juntos. */
   .dish__add {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    min-height: 44px;
-    margin-left: auto;
-    padding: 0.5rem 1.05rem;
+    flex-shrink: 0;
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-top: 2px;
     border-radius: var(--r-pill);
-    font-weight: 700;
-    font-size: var(--step--1);
-    color: var(--cream);
-    background: var(--guajillo);
+    color: var(--guajillo-ink);
+    background: color-mix(in oklab, var(--guajillo) 9%, var(--bg));
     transition:
       background-color var(--dur-fast) var(--ease-out-quart),
+      color var(--dur-fast) var(--ease-out-quart),
       transform var(--dur-fast) var(--ease-out-quart);
   }
   .dish__add:hover {
-    background: var(--guajillo-ink);
-    transform: translateY(-1px);
+    background: var(--guajillo);
+    color: var(--cream);
   }
   .dish__add:active {
-    transform: translateY(0) scale(0.97);
+    transform: scale(0.9);
+  }
+  .dish__add-plus {
+    display: grid;
+    place-items: center;
+    transition: transform var(--dur-mid) var(--ease-out-expo);
+  }
+
+  /* Estado agregado: el botón se vuelve marigold con el conteo */
+  .dish[data-in-order] .dish__add {
+    background: var(--cempasuchil);
+    color: var(--barro-deep);
+  }
+  .dish[data-in-order] .dish__add:hover {
+    background: var(--guajillo);
+    color: var(--cream);
+  }
+  .dish[data-in-order] .dish__add-plus {
+    transform: scale(0.82);
+  }
+  .dish__add-count {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .dish[data-in-order] .dish__add-count {
+    display: grid;
+  }
+  .dish[data-in-order] .dish__add:hover .dish__add-count {
+    display: none;
+  }
+  .dish[data-in-order] .dish__add-plus {
+    display: none;
+  }
+  .dish[data-in-order] .dish__add:hover .dish__add-plus {
+    display: grid;
+    transform: none;
+  }
+
+  .dish[data-just-added] .dish__add {
+    animation: pop var(--dur-mid) var(--ease-out-expo);
+  }
+  @keyframes pop {
+    0% {
+      transform: scale(1);
+    }
+    45% {
+      transform: scale(1.18);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .dish__add:hover,
-    .dish__add:active {
-      transform: none;
+    .dish__add,
+    .dish__add-plus,
+    .dish[data-just-added] .dish__add {
+      transition: none;
+      animation: none;
     }
   }
 </style>

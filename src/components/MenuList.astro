@@ -1,116 +1,411 @@
 ---
-import { menu } from '../data/menu';
+import { menu, corrida } from '../data/menu';
 import DishCard from './DishCard.astro';
+import Icon from './Icon.astro';
+
+const guisados = menu.find((s) => s.id === 'guisados')!.items;
+// La carta (el 5%): todo menos que la sopa/arroz viven dentro de la corrida.
+const carta = menu.filter((s) => s.id !== 'sopas');
 ---
 
 <div class="menu-list">
   <header class="menu-list__intro">
-    <p class="menu-list__kicker">La carta</p>
+    <p class="menu-list__kicker">El menú</p>
     <h2 class="menu-list__title">¿Qué se le antoja hoy?</h2>
-    <p class="menu-list__note">
-      Toca <strong>Agregar</strong> en lo que quieras. Tu pedido se va armando a la
-      derecha y al final lo mandas por WhatsApp. Los precios son de referencia; el
-      total te lo confirmamos por el chat.
+    <p class="menu-list__lede">
+      Casi todos piden <strong>comida corrida</strong>: un combo completo y bien servido.
+      ¿Prefieres armar algo suelto? También se puede, a la carta.
     </p>
   </header>
 
-  {
-    menu.map((section) => (
-      <section class="menu-group" id={`sec-${section.id}`} aria-labelledby={`h-${section.id}`}>
-        <div class="menu-group__head">
-          <p class="menu-group__kicker">{section.kicker}</p>
-          <h3 class="menu-group__title" id={`h-${section.id}`}>
-            {section.title}
-          </h3>
-          {section.blurb && <p class="menu-group__blurb">{section.blurb}</p>}
-        </div>
+  <div class="switch" role="tablist" aria-label="Tipo de pedido" data-switch>
+    <button class="switch__btn" type="button" role="tab" aria-selected="true" data-view="corrida">
+      Comida corrida
+    </button>
+    <button class="switch__btn" type="button" role="tab" aria-selected="false" data-view="carta">
+      A la carta
+    </button>
+  </div>
 
-        <div
-          class="menu-group__grid"
-          data-single={section.items.length === 1 ? '' : undefined}
-        >
-          {section.items.map((item) => (
-            <DishCard item={item} />
-          ))}
+  <!-- ============ COMIDA CORRIDA ============ -->
+  <section class="corrida" data-panel="corrida" aria-label="Armar comida corrida">
+    <div class="corrida__lead">
+      <h3 class="corrida__title">Arma tu comida corrida</h3>
+      <p>
+        Lleva <strong>agua del día</strong>, <strong>sopa o consomé</strong>,
+        <strong>arroz o espagueti</strong> y el <strong>guisado</strong> que elijas. Todo por
+        un solo precio — te lo confirmamos por WhatsApp.
+      </p>
+    </div>
+
+    <ol class="build">
+      <li class="build__step">
+        <div class="build__label"><span class="build__n">1</span> Elige tu guisado</div>
+        <div class="build__field">
+          <select class="build__select" data-corrida-guiso aria-label="Guisado">
+            <option value={corrida.guisadoDelDia}>{corrida.guisadoDelDia}</option>
+            <optgroup label="A la carta">
+              {guisados.map((g) => <option value={g.name}>{g.name}</option>)}
+            </optgroup>
+          </select>
+          <Icon name="arrow-down" size={18} />
         </div>
-      </section>
-    ))
-  }
+      </li>
+
+      <li class="build__step">
+        <div class="build__label"><span class="build__n">2</span> Sopa o consomé</div>
+        <div class="build__segs" data-corrida-sopa>
+          {
+            corrida.sopas.map((s, i) => (
+              <label class="pill">
+                <input type="radio" name="corrida-sopa" value={s} checked={i === 0} />
+                <span>{s}</span>
+              </label>
+            ))
+          }
+        </div>
+      </li>
+
+      <li class="build__step">
+        <div class="build__label"><span class="build__n">3</span> Arroz o espagueti</div>
+        <div class="build__segs" data-corrida-guarn>
+          {
+            corrida.guarniciones.map((s, i) => (
+              <label class="pill">
+                <input type="radio" name="corrida-guarn" value={s} checked={i === 0} />
+                <span>{s}</span>
+              </label>
+            ))
+          }
+        </div>
+      </li>
+    </ol>
+
+    <p class="corrida__incluye">
+      <Icon name="check" size={16} /> Incluye el agua del día (la que tengamos preparada).
+    </p>
+
+    <div class="corrida__note">
+      <label class="sr-only" for="corrida-note">Indicaciones para tu comida corrida</label>
+      <input
+        id="corrida-note"
+        class="build__select build__note"
+        data-corrida-note
+        type="text"
+        maxlength="140"
+        placeholder="¿Alguna indicación? Ej. “espagueti que no sea dulce”, sin cebolla…"
+      />
+    </div>
+
+    <button class="corrida__add" type="button" data-corrida-add>
+      <Icon name="plus" size={20} /> Agregar comida corrida
+    </button>
+  </section>
+
+  <!-- ============ A LA CARTA ============ -->
+  <section class="carta" data-panel="carta" hidden aria-label="Menú a la carta">
+    <p class="carta__hint">
+      <Icon name="check" size={18} /> Toca lo que quieras. Escribe cómo lo quieres y del total nos
+      encargamos nosotros.
+    </p>
+    {
+      carta.map((section) => (
+        <section class="menu-cat" id={`sec-${section.id}`} aria-labelledby={`h-${section.id}`}>
+          <div class="menu-cat__head">
+            <h3 class="menu-cat__title" id={`h-${section.id}`}>
+              {section.title}
+            </h3>
+            {section.blurb && <p class="menu-cat__blurb">{section.blurb}</p>}
+          </div>
+          <div class="menu-cat__items">
+            {section.items.map((item) => (
+              <DishCard item={item} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+  </section>
 </div>
 
 <style>
   .menu-list__intro {
-    margin-bottom: var(--space-l);
+    margin-bottom: var(--space-m);
   }
   .menu-list__kicker {
     font-weight: 700;
     font-size: var(--step--1);
     color: var(--cempasuchil-deep);
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
   }
   .menu-list__title {
     font-size: var(--step-4);
     line-height: 1;
     margin-bottom: 0.7rem;
   }
-  .menu-list__note {
-    color: var(--muted);
+  .menu-list__lede {
+    color: var(--ink-soft);
     max-width: var(--measure);
     font-size: var(--step-0);
+    line-height: 1.6;
   }
-  .menu-list__note strong {
+  .menu-list__lede strong {
+    color: var(--guajillo-ink);
+    font-weight: 600;
+  }
+
+  /* --- switch corrida / carta --- */
+  .switch {
+    display: inline-flex;
+    gap: 0.25rem;
+    padding: 0.3rem;
+    margin-bottom: var(--space-l);
+    background: var(--surface-2);
+    border-radius: var(--r-pill);
+  }
+  .switch__btn {
+    min-height: 44px;
+    padding: 0.5rem 1.3rem;
+    border-radius: var(--r-pill);
+    font-weight: 600;
+    font-size: var(--step-0);
+    color: var(--ink-soft);
+    transition: color var(--dur-fast), background-color var(--dur-fast);
+  }
+  .switch__btn[aria-selected='true'] {
+    color: var(--cream);
+    background: var(--guajillo);
+    box-shadow: var(--shadow-sm);
+  }
+  .switch__btn[aria-selected='false']:hover {
     color: var(--guajillo-ink);
   }
 
-  .menu-group {
-    margin-top: var(--space-xl);
-    scroll-margin-top: calc(var(--header-h) + 1rem);
+  /* --- armador comida corrida --- */
+  .corrida {
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border-radius: var(--r-lg);
+    background: linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--cempasuchil) 12%, var(--bg)),
+      var(--surface)
+    );
+    border: 1px solid var(--line);
   }
-  .menu-group:first-of-type {
-    margin-top: var(--space-l);
+  .corrida__title {
+    font-size: var(--step-3);
+    line-height: 1.02;
+    margin-bottom: 0.5rem;
   }
-  .menu-group__head {
+  .corrida__lead p {
+    color: var(--ink-soft);
+    font-size: var(--step-0);
+    line-height: 1.55;
+    max-width: 46ch;
     margin-bottom: var(--space-m);
   }
-  .menu-group__kicker {
+  .corrida__lead strong {
+    color: var(--guajillo-ink);
     font-weight: 600;
-    font-size: 0.72rem;
-    letter-spacing: 0.02em;
-    color: var(--muted);
-    margin-bottom: 0.25rem;
-  }
-  .menu-group__title {
-    font-size: var(--step-3);
-    line-height: 1;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.55rem;
-    border-bottom: 2px solid var(--line);
-    position: relative;
-  }
-  .menu-group__title::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -2px;
-    width: 3.2rem;
-    height: 2px;
-    background: var(--cempasuchil);
-  }
-  .menu-group__blurb {
-    color: var(--muted);
-    max-width: var(--measure);
-    font-size: var(--step-0);
-    margin-top: 0.7rem;
   }
 
-  .menu-group__grid {
-    display: grid;
-    gap: var(--space-s);
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
-    align-items: stretch;
+  .build {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
   }
-  /* A lone item (menú del día) gets a wider, feature treatment */
-  .menu-group__grid[data-single] {
-    grid-template-columns: minmax(0, 34rem);
+  .build__label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: var(--step-0);
+    color: var(--ink);
+    margin-bottom: 0.6rem;
+  }
+  .build__n {
+    display: grid;
+    place-items: center;
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: var(--r-pill);
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    color: var(--cream);
+    background: var(--guajillo);
+  }
+
+  .build__field {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .build__field svg {
+    position: absolute;
+    right: 0.9rem;
+    pointer-events: none;
+    color: var(--guajillo-ink);
+  }
+  .build__select {
+    width: 100%;
+    min-height: 52px;
+    padding: 0.7rem 2.6rem 0.7rem 1rem;
+    border: 1.5px solid var(--line);
+    border-radius: var(--r-md);
+    background: var(--bg);
+    font-size: var(--step-0);
+    font-weight: 600;
+    color: var(--ink);
+    appearance: none;
+    cursor: pointer;
+    transition: border-color var(--dur-fast);
+  }
+  .build__select:focus {
+    border-color: var(--guajillo);
+    outline: none;
+  }
+  .build__note {
+    padding-right: 1rem;
+    font-weight: 500;
+    cursor: text;
+  }
+  .build__note::placeholder {
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .build__segs {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .pill {
+    position: relative;
+    display: inline-flex;
+    flex: 1;
+  }
+  .pill input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    cursor: pointer;
+  }
+  .pill span {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0.6rem 1rem;
+    border-radius: var(--r-md);
+    font-weight: 600;
+    font-size: var(--step-0);
+    color: var(--ink-soft);
+    background: var(--bg);
+    border: 1.5px solid var(--line);
+    transition: background-color var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast);
+  }
+  .pill input:checked + span {
+    color: var(--cream);
+    background: var(--guajillo);
+    border-color: var(--guajillo);
+  }
+  .pill input:focus-visible + span {
+    outline: 3px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .pill:hover input:not(:checked) + span {
+    border-color: var(--guajillo);
+  }
+
+  .corrida__incluye {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: var(--space-m) 0 var(--space-s);
+    font-size: var(--step--1);
+    font-weight: 600;
+    color: var(--guajillo-ink);
+  }
+  .corrida__note {
+    margin-bottom: var(--space-m);
+  }
+
+  .corrida__add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 56px;
+    border-radius: var(--r-md);
+    font-weight: 700;
+    font-size: var(--step-1);
+    color: var(--cream);
+    background: var(--guajillo);
+    transition: background-color var(--dur-fast) var(--ease-out-quart), transform var(--dur-fast) var(--ease-out-quart);
+  }
+  .corrida__add:hover {
+    background: var(--guajillo-ink);
+    transform: translateY(-2px);
+  }
+  .corrida__add:active {
+    transform: translateY(0) scale(0.99);
+  }
+  .corrida__add[data-added] {
+    background: var(--whatsapp);
+  }
+
+  /* --- a la carta --- */
+  .carta__hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: var(--space-s) var(--space-m);
+    margin-bottom: var(--space-m);
+    border-radius: var(--r-md);
+    background: color-mix(in oklab, var(--cempasuchil) 16%, var(--bg));
+    color: var(--barro-deep);
+    font-size: var(--step--1);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .carta__hint svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+    color: var(--guajillo-ink);
+  }
+
+  .menu-cat {
+    margin-top: var(--space-l);
+    scroll-margin-top: calc(var(--header-h) + 1rem);
+  }
+  .menu-cat:first-of-type {
+    margin-top: 0;
+  }
+  .menu-cat__title {
+    font-size: var(--step-2);
+    line-height: 1;
+    display: inline-block;
+    padding-bottom: 0.35rem;
+    border-bottom: 2px solid var(--cempasuchil);
+  }
+  .menu-cat__blurb {
+    color: var(--muted);
+    max-width: var(--measure);
+    font-size: var(--step--1);
+    margin-top: 0.6rem;
+  }
+  .menu-cat__items {
+    margin-top: var(--space-xs);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .corrida__add:hover,
+    .corrida__add:active {
+      transform: none;
+    }
   }
 </style>
