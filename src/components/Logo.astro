@@ -1,0 +1,59 @@
+---
+// Logo de La Patrona (recreación vectorial, aprobada). Usa currentColor, así
+// que toma el color del contexto (ink en header claro, cream en footer barro).
+interface Props {
+  class?: string;
+}
+const { class: cls } = Astro.props;
+---
+
+<svg
+  class={cls}
+  viewBox="0 0 300 206"
+  role="img"
+  aria-label="La Patrona Restaurantito"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="4.5"
+  stroke-linejoin="round"
+  stroke-linecap="round"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path d="M10 110 L62 24 H238 L290 110 L238 196 H62 Z"></path>
+  <path d="M25 110 L70 38 H230 L275 110 L230 182 H70 Z" stroke-width="2.2"></path>
+  <text
+    x="150"
+    y="96"
+    text-anchor="middle"
+    font-family="Georgia, 'Times New Roman', serif"
+    font-weight="700"
+    font-size="35"
+    letter-spacing="0.5"
+    fill="currentColor"
+    stroke="none">LA PATRONA</text>
+  <text
+    x="150"
+    y="124"
+    text-anchor="middle"
+    font-family="Georgia, serif"
+    font-weight="500"
+    font-size="15"
+    letter-spacing="2.5"
+    fill="currentColor"
+    stroke="none">RESTAURANTITO</text>
+  <g stroke-width="3.2">
+    <g transform="rotate(17 150 162)">
+      <line x1="150" y1="178" x2="150" y2="152"></line>
+      <rect x="141" y="136" width="18" height="18" rx="2.5"></rect>
+      <line x1="146" y1="140" x2="146" y2="153"></line>
+      <line x1="150" y1="140" x2="150" y2="153"></line>
+      <line x1="154" y1="140" x2="154" y2="153"></line>
+    </g>
+    <g transform="rotate(-17 150 162)">
+      <line x1="150" y1="178" x2="150" y2="154"></line>
+      <path d="M142 138 V150 Q142 154 150 154 Q158 154 158 150 V138"></path>
+      <line x1="147" y1="138" x2="147" y2="149"></line>
+      <line x1="153" y1="138" x2="153" y2="149"></line>
+    </g>
+  </g>
+</svg>

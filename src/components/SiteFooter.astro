@@ -1,17 +1,15 @@
 ---
 import { site } from '../data/site';
 import Icon from './Icon.astro';
+import Logo from './Logo.astro';
 const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
   <div class="container footer__inner">
     <div class="footer__brand">
-      <span class="brand__mark" aria-hidden="true">LP</span>
-      <div>
-        <p class="footer__name">La Patrona Fondita</p>
-        <p class="footer__tag">Comida casera en {site.address.colonia}, Azcapotzalco · {site.years} años</p>
-      </div>
+      <Logo class="footer__logo" />
+      <p class="footer__tag">Comida casera en {site.address.colonia}, Azcapotzalco · {site.years} años</p>
     </div>
 
     <a class="footer__cta" href={`https://wa.me/${site.whatsappNumber}`} target="_blank" rel="noopener">
@@ -52,23 +50,18 @@ const year = new Date().getFullYear();
   .footer__brand {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 1rem;
   }
-  .footer__brand .brand__mark {
-    width: 2.8rem;
-    height: 2.8rem;
-    background: var(--cempasuchil);
-    color: var(--barro-deep);
-    font-size: 1.15rem;
-  }
-  .footer__name {
-    font-family: var(--font-display);
-    font-size: var(--step-1);
+  .footer__brand :global(.footer__logo) {
+    height: 4.4rem;
+    width: auto;
     color: var(--cream);
+    flex-shrink: 0;
   }
   .footer__tag {
     font-size: var(--step--1);
     color: var(--cream-mute);
+    max-width: 16rem;
   }
   .footer__cta {
     display: inline-flex;

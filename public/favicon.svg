@@ -1,5 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#9a3b1f" />
-  <text x="32" y="44" font-family="Georgia, 'Times New Roman', serif"
-    font-size="34" fill="#f6e6c8" text-anchor="middle" font-weight="400">LP</text>
+  <g fill="none" stroke="#f6e6c8" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9 32 L19 15 H45 L55 32 L45 49 H19 Z" />
+    <g stroke-width="2.4">
+      <g transform="rotate(17 32 35)">
+        <line x1="32" y1="46" x2="32" y2="31" />
+        <rect x="27.5" y="23" width="9" height="9" rx="1.5" />
+      </g>
+      <g transform="rotate(-17 32 35)">
+        <line x1="32" y1="46" x2="32" y2="32" />
+        <path d="M27.5 25 V30 Q27.5 32 32 32 Q36.5 32 36.5 30 V25" />
+      </g>
+    </g>
+  </g>
 </svg>
