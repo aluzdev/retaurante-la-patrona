@@ -427,7 +427,7 @@ function pulseBar(entering = false) {
   if (!bar) return;
   bar.setAttribute('data-added', '');
   clearTimeout(flashTimer);
-  flashTimer = window.setTimeout(() => bar.removeAttribute('data-added'), 1300);
+  flashTimer = window.setTimeout(() => bar.removeAttribute('data-added'), 900);
   if (!entering && !prefersReducedMotion()) {
     bar.animate(
       [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }],

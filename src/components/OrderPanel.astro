@@ -537,6 +537,7 @@ import Icon from './Icon.astro';
     background: var(--guajillo);
     box-shadow: var(--shadow-lg);
     animation: bar-in var(--dur-slow) var(--ease-out-expo);
+    transition: background-color 420ms var(--ease-out-quart);
   }
   @keyframes bar-in {
     from {
@@ -586,12 +587,9 @@ import Icon from './Icon.astro';
     align-items: center;
     gap: 0.4rem;
   }
-  .order-bar[data-added] .order-bar__default {
-    display: none;
-  }
-  .order-bar[data-added] .order-bar__added {
-    display: inline-flex;
-  }
+  /* la etiqueta NO cambia al agregar: se mantiene "Ver pedido" para no
+     re-dimensionar la píldora. La confirmación es el destello verde + el
+     contador que brinca. */
   .order-bar__cta {
     display: inline-flex;
     align-items: center;
