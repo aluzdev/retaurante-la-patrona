@@ -60,6 +60,7 @@ const totalQty = () => lines.reduce((n, l) => n + l.qty, 0);
 // Sin opciones ni nota al tocar: se agrega el platillo; los detalles se
 // escriben como nota en el pedido.
 function addFromCard(card: HTMLElement) {
+  const wasEmpty = lines.length === 0;
   const itemId = card.dataset.id!;
   const name = card.dataset.name!;
   const key = keyFor(itemId, [], '');
@@ -72,12 +73,13 @@ function addFromCard(card: HTMLElement) {
 
   render();
   save();
-  pulseBar();
+  pulseBar(wasEmpty);
   announce(`${name} agregado a tu pedido`);
 }
 
 /* ---------- comida corrida (el 95%) ---------- */
 function addComidaCorrida() {
+  const wasEmpty = lines.length === 0;
   const guiso = $<HTMLSelectElement>('[data-corrida-guiso]')?.value ?? '';
   const sopa = $<HTMLInputElement>('[data-corrida-sopa] input:checked')?.value ?? '';
   const guarn = $<HTMLInputElement>('[data-corrida-guarn] input:checked')?.value ?? '';
@@ -104,7 +106,7 @@ function addComidaCorrida() {
 
   render();
   save();
-  pulseBar();
+  pulseBar(wasEmpty);
   announce('Comida corrida agregada a tu pedido');
 }
 
@@ -397,6 +399,7 @@ const backdrop = $('[data-backdrop]')!;
 let lastFocus: HTMLElement | null = null;
 
 function openDrawer() {
+  hideCartHint();
   lastFocus = document.activeElement as HTMLElement;
   panel.dataset.open = '';
   backdrop.hidden = false;
@@ -415,13 +418,50 @@ function onEsc(e: KeyboardEvent) {
   if (e.key === 'Escape') closeDrawer();
 }
 
-function pulseBar() {
-  const bar = el.bar;
+let flashTimer = 0;
+// Llamar al agregar: la píldora se pone verde y dice "¡Agregado!".
+// entering=true cuando el carrito estaba vacío: la entrada (CSS bar-in) ya
+// da el movimiento, así que no encimamos el salto.
+function pulseBar(entering = false) {
+  const bar = el.bar as HTMLElement | null;
   if (!bar) return;
-  bar.animate(
-    [{ transform: 'scale(1)' }, { transform: 'scale(1.04)' }, { transform: 'scale(1)' }],
-    { duration: 340, easing: 'cubic-bezier(0.25,1,0.5,1)' }
-  );
+  bar.setAttribute('data-added', '');
+  clearTimeout(flashTimer);
+  flashTimer = window.setTimeout(() => bar.removeAttribute('data-added'), 1300);
+  if (!entering && !prefersReducedMotion()) {
+    bar.animate(
+      [{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }],
+      { duration: 420, easing: 'cubic-bezier(0.16,1,0.3,1)' }
+    );
+  }
+  showCartHintOnce();
+}
+const prefersReducedMotion = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// Primer platillo agregado: enseña dónde está el pedido (una sola vez).
+const HINT_KEY = 'lp-cart-hint-seen';
+let hintTimer = 0;
+function showCartHintOnce() {
+  const hint = $('[data-cart-hint]') as HTMLElement | null;
+  if (!hint) return;
+  try {
+    if (localStorage.getItem(HINT_KEY)) return;
+  } catch {
+    /* ignore */
+  }
+  hint.hidden = false;
+  clearTimeout(hintTimer);
+  hintTimer = window.setTimeout(hideCartHint, 5000);
+}
+function hideCartHint() {
+  const hint = $('[data-cart-hint]') as HTMLElement | null;
+  if (hint) hint.hidden = true;
+  try {
+    localStorage.setItem(HINT_KEY, '1');
+  } catch {
+    /* ignore */
+  }
 }
 
 /* ---------- accesibilidad: anuncios ---------- */

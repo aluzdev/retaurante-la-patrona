@@ -124,14 +124,22 @@ import Icon from './Icon.astro';
   </li>
 </template>
 
-<!-- Barra flotante (solo móvil) para abrir el pedido -->
-<button class="order-bar" type="button" data-order-bar hidden>
+<!-- Aviso de una sola vez: dónde está el pedido -->
+<div class="cart-hint" data-cart-hint hidden role="status">
+  Aquí se va armando tu pedido. Tócalo para verlo.
+</div>
+
+<!-- Píldora flotante para abrir el pedido -->
+<button class="order-bar" type="button" data-order-bar hidden aria-label="Ver tu pedido">
   <span class="order-bar__left">
-    <Icon name="bag" size={20} />
-    <span class="order-bar__count" data-bar-count>0</span>
-    <span>Ver pedido</span>
+    <span class="order-bar__count" data-bar-count aria-hidden="true">0</span>
+    <span class="order-bar__label">
+      <Icon name="bag" size={20} />
+      <span class="order-bar__default">Ver pedido</span>
+      <span class="order-bar__added"><Icon name="check" size={20} /> ¡Agregado! Ábrelo</span>
+    </span>
   </span>
-  <span class="order-bar__cta">Continuar <Icon name="arrow-right" size={18} /></span>
+  <span class="order-bar__cta">Abrir <Icon name="arrow-right" size={18} /></span>
 </button>
 
 <div class="order-backdrop" data-backdrop hidden></div>
@@ -512,7 +520,7 @@ import Icon from './Icon.astro';
     text-align: right;
   }
 
-  /* --- barra flotante móvil --- */
+  /* --- píldora flotante del pedido --- */
   .order-bar {
     position: fixed;
     left: 0.75rem;
@@ -528,32 +536,61 @@ import Icon from './Icon.astro';
     color: var(--cream);
     background: var(--guajillo);
     box-shadow: var(--shadow-lg);
-    animation: bar-in var(--dur-mid) var(--ease-out-expo);
+    animation: bar-in var(--dur-slow) var(--ease-out-expo);
   }
   @keyframes bar-in {
     from {
-      transform: translateY(120%);
+      transform: translateY(140%) scale(0.96);
+      opacity: 0;
     }
     to {
       transform: none;
+      opacity: 1;
     }
+  }
+  /* estado "¡Agregado!" (JS agrega/quita data-added; el salto lo hace JS) */
+  .order-bar[data-added] {
+    background: var(--whatsapp);
   }
   .order-bar__left {
     display: inline-flex;
     align-items: center;
     gap: 0.55rem;
     font-weight: 700;
+    min-width: 0;
   }
   .order-bar__count {
     display: inline-grid;
     place-items: center;
-    min-width: 1.5rem;
-    height: 1.5rem;
-    padding: 0 0.35rem;
+    min-width: 1.6rem;
+    height: 1.6rem;
+    padding: 0 0.4rem;
     border-radius: var(--r-pill);
     background: var(--cempasuchil);
     color: var(--barro-deep);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
+    font-weight: 800;
+    transition: transform var(--dur-fast) var(--ease-out-expo);
+  }
+  .order-bar[data-added] .order-bar__count {
+    transform: scale(1.25);
+  }
+  /* swap de etiqueta: "Ver pedido" <-> "¡Agregado! Ábrelo" */
+  .order-bar__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .order-bar__added {
+    display: none;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .order-bar[data-added] .order-bar__default {
+    display: none;
+  }
+  .order-bar[data-added] .order-bar__added {
+    display: inline-flex;
   }
   .order-bar__cta {
     display: inline-flex;
@@ -561,6 +598,45 @@ import Icon from './Icon.astro';
     gap: 0.3rem;
     font-weight: 600;
     font-size: var(--step--1);
+    white-space: nowrap;
+  }
+
+  /* --- aviso de una sola vez --- */
+  .cart-hint {
+    position: fixed;
+    z-index: var(--z-toast);
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 4.6rem;
+    padding: 0.7rem 1rem;
+    border-radius: var(--r-md);
+    background: var(--barro-deep);
+    color: var(--cream);
+    font-size: var(--step--1);
+    font-weight: 600;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    animation: hint-in var(--dur-slow) var(--ease-out-expo);
+  }
+  .cart-hint::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
+    right: 2rem;
+    width: 14px;
+    height: 14px;
+    background: var(--barro-deep);
+    transform: rotate(45deg);
+  }
+  @keyframes hint-in {
+    from {
+      transform: translateY(8px);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
   }
 
   .order-backdrop {
@@ -605,13 +681,27 @@ import Icon from './Icon.astro';
       min-width: 15rem;
       border-radius: var(--r-pill);
     }
+    .cart-hint {
+      left: auto;
+      right: 1.5rem;
+      bottom: 5.6rem;
+      max-width: 19rem;
+    }
+    .cart-hint::after {
+      right: 2.5rem;
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .order,
     .order-bar,
+    .order-bar[data-added],
+    .cart-hint,
     .order__send:hover {
       transition: none;
       animation: none;
+    }
+    .order-bar[data-added] .order-bar__count {
+      transform: none;
     }
     .line {
       animation: none;
